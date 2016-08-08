@@ -1,0 +1,41 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/gorilla/context",
+			"repository": "https://github.com/gorilla/context",
+			"revision": "aed02d124ae4a0e94fea4541c8effd05bf0c8296",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/gorilla/mux",
+			"repository": "https://github.com/gorilla/mux",
+			"revision": "780415097119f6f61c55475fe59b66f3c3e9ea53",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/jinzhu/inflection",
+			"repository": "https://github.com/jinzhu/inflection",
+			"revision": "8f4d3a0d04ce0b7c0cf3126fb98524246d00d102",
+			"branch": "master"
+		},
+		{
+			"importpath": "gopkg.in/bsm/ratelimit.v1",
+			"repository": "https://gopkg.in/bsm/ratelimit.v1",
+			"revision": "db14e161995a5177acef654cb0dd785e8ee8bc22",
+			"branch": "v1"
+		},
+		{
+			"importpath": "gopkg.in/go-pg/migrations.v4",
+			"repository": "https://gopkg.in/go-pg/migrations.v4",
+			"revision": "2e4820f2909c46b92263aaf2ab7a24893c670f04",
+			"branch": "master"
+		},
+		{
+			"importpath": "gopkg.in/pg.v4",
+			"repository": "https://gopkg.in/pg.v4",
+			"revision": "d4c1015722406fcaef362ce8d5deb9819b98f7d8",
+			"branch": "master"
+		}
+	]
+}
