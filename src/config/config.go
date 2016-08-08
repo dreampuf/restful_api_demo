@@ -4,6 +4,6 @@ type RestfulAPIConfig struct {
 	Host string
 	Port uint
 
-	DBHost, DBUser, DBPassword string
+	DBHost, DBName, DBUser, DBPassword string
 	DBPort uint
 }

@@ -25,15 +25,23 @@ func init() {
 
 		 DO $$
 		 BEGIN
-		 IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'relationtype') THEN
-		    CREATE TYPE relationtype AS ENUM ('like', 'dislike', 'matched');
+		 IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'relationstate') THEN
+		    CREATE TYPE relationstate AS ENUM ('liked', 'disliked', 'matched');
 		 END IF;
 		 END
 		 $$;
-		 CREATE TABLE IF NOT EXISTS relationships (
+		 DO $$
+		 BEGIN
+		 IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'relationtype') THEN
+		    CREATE TYPE relationtype AS ENUM ('relationship', 'watch');
+		 END IF;
+		 END
+		 $$;
+		 CREATE TABLE IF NOT EXISTS relation_ships (
 		   id serial,
 		   uid integer,
 		   oid integer,
+		   state relationstate,
 		   type relationtype
 		 );
 		 `)
@@ -42,8 +50,9 @@ func init() {
 		fmt.Println("Drop User, Relation table...")
 		_, err := db.Exec(`
 		DROP TABLE users;
-		DROP TABLE relationships;
+		DROP TABLE relation_ships;
 		DROP TYPE relationtype;
+		DROP TYPE relationstate;
 		DROP TYPE usertype;
 		`)
 		return err
