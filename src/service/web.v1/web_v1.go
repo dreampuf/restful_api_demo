@@ -1,21 +1,25 @@
 package web_v1
 
 import (
-	"github.com/gorilla/mux"
-	"net/http"
-	"github.com/gorilla/context"
 	"db"
-	"log"
 	"encoding/json"
-	"strconv"
 	"fmt"
+	"github.com/gorilla/context"
+	"github.com/gorilla/mux"
+	"log"
+	"net/http"
+	"strconv"
 	"strings"
+)
+
+const (
+	ERR_NO_RECORD = "no rows in result set"
 )
 
 type APIError struct {
 	StatusCode int
-	Message string
-	Exception error
+	Message    string
+	Exception  error
 }
 
 func (a *APIError) Error() string {
@@ -120,7 +124,6 @@ func UserRelationShip(w http.ResponseWriter, r *http.Request) {
 		}
 	default:
 		http.Error(w, http.StatusText(405), 405)
-		return
 	}
 }
 
@@ -137,7 +140,7 @@ func PutUserRelationShip(w http.ResponseWriter, r *http.Request) {
 	}
 	switch r.Method {
 	case "PUT":
-		stateObj := &struct { State string }{}
+		stateObj := &struct{ State string }{}
 		err := json.NewDecoder(r.Body).Decode(stateObj)
 		if err != nil || stateObj.State == db.RELATIONSHIP_MATCHED {
 			panic(APIError{400, "Invalidate post data", err})
@@ -150,12 +153,14 @@ func PutUserRelationShip(w http.ResponseWriter, r *http.Request) {
 		hisRSIsEmpty := false
 		hisRS, err := ds.UserRelationShip(oid, uid, db.RELATIONSHIP_TYPE_RS)
 		if err != nil {
-			if strings.Contains(err.Error(), "no rows in result set") {
+			if strings.Contains(err.Error(), ERR_NO_RECORD) {
 				hisRSIsEmpty = true
 			} else {
 				panic(APIError{500, "DB error", err})
 			}
 		}
+
+		w.WriteHeader(http.StatusOK)
 
 		if myRS.State == db.RELATIONSHIP_LIKE && !hisRSIsEmpty && hisRS.State == db.RELATIONSHIP_LIKE {
 			myNewRS, _ := ds.CreateOrUpdateRelationShip(uid, oid, db.RELATIONSHIP_MATCHED, db.RELATIONSHIP_TYPE_RS)
@@ -166,12 +171,15 @@ func PutUserRelationShip(w http.ResponseWriter, r *http.Request) {
 			return
 		} else if myRS.State == db.RELATIONSHIP_DISLIKE && !hisRSIsEmpty && hisRS.State == db.RELATIONSHIP_MATCHED {
 			ds.CreateOrUpdateRelationShip(oid, uid, db.RELATIONSHIP_LIKE, db.RELATIONSHIP_TYPE_RS)
-			return
 		}
+
+		if err = json.NewEncoder(w).Encode(*myRS); err != nil {
+			panic(APIError{500, "Serialize fail ", err})
+		}
+		return
 
 	default:
 		http.Error(w, http.StatusText(405), 405)
 		return
 	}
 }
-

@@ -20,6 +20,20 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "golang.org/x/tools/cmd/cover",
+			"repository": "https://go.googlesource.com/tools",
+			"revision": "855bbc50ad86de9aa46f829ff040ed8edc5b4c37",
+			"branch": "master",
+			"path": "/cmd/cover"
+		},
+		{
+			"importpath": "golang.org/x/tools/cover",
+			"repository": "https://go.googlesource.com/tools",
+			"revision": "855bbc50ad86de9aa46f829ff040ed8edc5b4c37",
+			"branch": "master",
+			"path": "/cover"
+		},
+		{
 			"importpath": "gopkg.in/bsm/ratelimit.v1",
 			"repository": "https://gopkg.in/bsm/ratelimit.v1",
 			"revision": "db14e161995a5177acef654cb0dd785e8ee8bc22",

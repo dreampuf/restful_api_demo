@@ -1,20 +1,18 @@
 package db
 
 import (
+	"config"
 	"fmt"
 	"gopkg.in/pg.v4"
-	"config"
 	"time"
-	"log"
-	"os"
 )
 
 const (
-	RELATIONSHIP_TYPE_RS = "relationship"
+	RELATIONSHIP_TYPE_RS    = "relationship"
 	RELATIONSHIP_TYPE_WATCH = "watch"
-	RELATIONSHIP_LIKE = "liked"
-	RELATIONSHIP_DISLIKE = "disliked"
-	RELATIONSHIP_MATCHED = "matched"
+	RELATIONSHIP_LIKE       = "liked"
+	RELATIONSHIP_DISLIKE    = "disliked"
+	RELATIONSHIP_MATCHED    = "matched"
 )
 
 type DataSource interface {
@@ -22,8 +20,8 @@ type DataSource interface {
 	CreateUser(string) (*User, error)
 
 	UserRelationShips(int64) ([]RelationShip, error)
-	UserRelationShip(int64, int64, string)(*RelationShip, error)
-	UserRelationShipCount(int64, int64, string)(int, error)
+	UserRelationShip(int64, int64, string) (*RelationShip, error)
+	UserRelationShipCount(int64, int64, string) (int, error)
 	CreateOrUpdateRelationShip(int64, int64, string, string) (*RelationShip, error)
 }
 
@@ -32,9 +30,9 @@ type APIDataSource struct {
 }
 
 type User struct {
-	Id     int64  `json:"id"`
-	Name   string  `json:"name"`
-	Type   string  `json:"type"`
+	Id   int64  `json:"id"`
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
 func (u User) String() string {
@@ -42,28 +40,26 @@ func (u User) String() string {
 }
 
 type RelationShip struct {
-	Id       int64 `json:"-"`
-	Uid      int64 `json:"-"`// FK to User
-	Oid 	 int64 `json:"user_id"`// FK to User
-	State    string `json:"state"`
-	Type 	 string `json:"type"`
+	Id    int64  `json:"-"`
+	Uid   int64  `json:"-"`       // FK to User
+	Oid   int64  `json:"user_id"` // FK to User
+	State string `json:"state"`
+	Type  string `json:"type"`
 }
 
 func (s RelationShip) String() string {
 	return fmt.Sprintf("RelationShip<%d %d %d>", s.Id, s.Uid, s.Oid)
 }
 
-
-
 func NewAPIDataSource(cfg *config.RestfulAPIConfig) *APIDataSource {
 	opts := &pg.Options{
-		User: cfg.DBUser,
+		User:     cfg.DBUser,
 		Password: cfg.DBPassword,
 		Database: cfg.DBName,
-		Addr: fmt.Sprintf("%s:%d", cfg.DBHost, cfg.DBPort),
+		Addr:     fmt.Sprintf("%s:%d", cfg.DBHost, cfg.DBPort),
 	}
 	db := pg.Connect(opts).WithTimeout(30 * time.Second)
-	return &APIDataSource{ db }
+	return &APIDataSource{db}
 }
 
 func (ds *APIDataSource) Users() ([]User, error) {
@@ -90,32 +86,31 @@ func (ds *APIDataSource) UserRelationShips(uid int64) ([]RelationShip, error) {
 	return rs, err
 }
 
-func (ds *APIDataSource) UserRelationShip(uid, oid int64, tp string)(*RelationShip, error) {
+func (ds *APIDataSource) UserRelationShip(uid, oid int64, tp string) (*RelationShip, error) {
 	myRS := RelationShip{
-		Uid: uid,
-		Oid: oid,
+		Uid:  uid,
+		Oid:  oid,
 		Type: tp,
 	}
 	err := ds.conn.Model(&myRS).Where("uid = ?", uid).Where("oid = ?", oid).Where("type = ?", tp).Select()
 	return &myRS, err
 }
 
-func (ds *APIDataSource) UserRelationShipCount(uid, oid int64, tp string)(int, error) {
+func (ds *APIDataSource) UserRelationShipCount(uid, oid int64, tp string) (int, error) {
 	myRS := RelationShip{
-		Uid: uid,
-		Oid: oid,
+		Uid:  uid,
+		Oid:  oid,
 		Type: tp,
 	}
 	return ds.conn.Model(&myRS).Where("uid = ?", uid).Where("oid = ?", oid).Where("type = ?", tp).Count()
 }
 
-
 func (ds *APIDataSource) CreateOrUpdateRelationShip(uid, oid int64, st string, tp string) (*RelationShip, error) {
 	rs := RelationShip{
-		Uid: uid,
-		Oid: oid,
+		Uid:   uid,
+		Oid:   oid,
 		State: st,
-		Type: tp,
+		Type:  tp,
 	}
 	created, err := ds.conn.Model(&rs).Where("uid = ?", uid).Where("oid = ?", oid).Where("type = ?", tp).SelectOrCreate()
 	if err != nil {
