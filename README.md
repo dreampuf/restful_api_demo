@@ -15,6 +15,23 @@ About this project.
     
     gb test
     
+    bin/restapi -help
+    Usage of ./bin/restapi:
+      -dbhost string
+           	Connecting DB Host (default "127.0.0.1")
+      -dbname string
+           	Connecting DB Name (default "api")
+      -dbpassword string
+           	Connecting DB Password (default "api")
+      -dbport uint
+           	Connecting DB Port (default 5432)
+      -dbuser string
+           	Connecting DB User (default "api")
+      -host string
+           	WebService Host (default "127.0.0.1")
+      -port uint
+           	WebService Port (default 8080)
+    
 ## With Docker
 
     ## Setup a database
